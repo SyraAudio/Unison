@@ -1,2 +1,2 @@
 # Samspel
-Open Source Protocol to for Syra (or any DAW that implements Samspel) to Hardware Controller communication
+Open Source Protocol DAW <-> Hardware communication. Uses 11 bits instead of 7 bits (MIDI standard) for values.
