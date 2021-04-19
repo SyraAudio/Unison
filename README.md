@@ -9,6 +9,15 @@ Unison tries to build up a protocol that is open source, goverened by the commun
 ## Warning! Protocol in alpha state!
 This protocol is in its very very early stages and **will change** alot! We do not recommend implementing it into a product until it hits a stable version. At Syra Audio, we will constantly implement it into our products to check if the protocol is missing anything. Of course you are allowed to do so as well, but use at your own risk.
 
+## General overview
+The protocol enables software and hardware manufactures (and enthusiasts) to build there own devices and apps that are compatible with eacht piece of soft- and hardware that implements this protocol.
+
+Since the most obvious application to control is a digital audio workstation, the protocol focuses on enabling the needed functionalities for this software. In general audio software other than full fledged DAWs are often just a subset of a DAW and should therefore be compatible with the protocol.
+
+The protocol is divided in a transport or main section that includes transport control general display of information and various other global functions. Since Unison isn't limited to 3 byte packages (like MIDI) the Unison protocol can cover way more functions.
+
+The channels are divided into zones. To make it easy for manufacturers, the Unison protocol assumes a zone to be a max of 16 channels and a max of 16 zones (bundled into 1 byte). So the protocol supports a maximum of 256 channels. Each zone can have fewer than 16 channels, with different zones being completely independent from each other. So one zone can have two channels while another one has 16.
+
 ## Roadmap
 
 - [ ] Define base protocol
@@ -23,7 +32,7 @@ At Syra Audio we prototype this protocol using an Arduino Leonardo Micro Control
 
 **All protocol values are given in hexadecimal.**
 
-Transmissions consist of block of 4 bytes (so 4, 8, 12, 16, 20, etc. bytes), always starting with `80` to identify the unsion protocol.
+Transmissions consist of block of 4 bytes (so 4, 8, 12, 16, 20, etc. bytes), always starting with `80` or `8i` (where `i` is a 4 bit connection id) to identify the unsion protocol.
 
 ## Opening a connection
 
@@ -34,16 +43,16 @@ To request a connection from a device, the host sends three bytes to the device:
 
 The device should answer with 8 bytes or two 4 byte blocks:
 
-`80 ff ff 00 00 00 00 00`
+`80 ff ff mm mm mm pp pp`
 
 The first 3 bytes are protocol specific, with `80 ff ff` stating that a connection will be established. The other 5 bytes are used to identify the device. To break it down a bit further:
 
 * `80` - Unison protocol identifier
 * `ff ff` - Connection will be established
-* `00 00 00 (4th to 6th byte)` - Manufacturer ID
-* `00 00 (7th and 8th byte)` - Product ID
+* `mm mm mm (4th to 6th byte)` - Manufacturer ID
+* `pp pp (7th and 8th byte)` - Product ID
 
-The manufacturer ID `ff ff ff` is reserved for developing. A host should allow manufacturer IDs with value `ff ff ff` if it contains a development mode and it is active.
+The manufacturer ID `ff ff ff` is reserved for developing. A host should allow manufacturer IDs with the value `ff ff ff` if it contains a development mode and it is active.
 
 #### How to ensure valid manufacturer and product IDs
 
@@ -51,7 +60,9 @@ Todo...
 
 If the host validates the connection answer, it itself sends an answer:
 
-`80 ff ff ff`
+`80 ff ff fi`
+
+Where `i` is a connection id. This allows having multiple devices using the Unison protocol connected at the same time, controlling the same application. The device has to extract that id and keep it in memory. Since multiple devices can control the same application, the device has to send its connection id for the host to identify which device sent the command.
 
 At this point the device should have its end of the connection ready and the host should start sending the ping in intervals to keep the connection alive.
 
@@ -59,24 +70,24 @@ At this point the device should have its end of the connection ready and the hos
 
 This follows the same routine as the connection establishing from the host side, but with a difference, that the device has to send a connection request message:
 
-`80 7f 00 00`
+`8i 7f 00 00`
 
 If the host recevices this message, it should start the connection routine as described above.
 
 ## Ping
 To keep a connection alive, the Unison host needs to ping the connected device at least every 2 seconds. To ping a device, the unison host sends these 4 bytes:
 
-`80 00 00 00`
+`8i 00 00 00`
 
 The device should respond with:
 
-`80 00 ff 00`
+`8i 00 ff 00`
 
 If the host fails to send a ping after 2 seconds relative to the last sent ping answer, the device should close its connection.
 If the device fails to send a answer for the ping after 2 seconds the host should close its connection.
 
-Now both the host and the device can send commands and values to each other to update the respective surface. 
+Now both the host and the device can send commands and values to each other to update the respective surface.
 
 ## Transport Controls
 
-Todo...
+Transport controls 
