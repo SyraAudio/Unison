@@ -38,10 +38,10 @@ The device should answer with 8 bytes or two 4 byte blocks:
 
 The first 3 bytes are protocol specific, with `80 ff ff` stating that a connection will be established. The other 5 bytes are used to identify the device. To break it down a bit further:
 
-`80` - Unison protocol identifier
-`ff ff` - Connection will be established
-`00 00 00 (4th to 6th byte)` - Manufacturer ID
-`00 00 (7th and 8th byte)` - Product ID
+* `80` - Unison protocol identifier
+* `ff ff` - Connection will be established
+* `00 00 00 (4th to 6th byte)` - Manufacturer ID
+* `00 00 (7th and 8th byte)` - Product ID
 
 The manufacturer ID `ff ff ff` is reserved for developing. A host should allow manufacturer IDs with value `ff ff ff` if it contains a development mode and it is active.
 
