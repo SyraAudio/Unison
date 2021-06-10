@@ -84,7 +84,7 @@ The device should respond with:
 `8i 00 ff 00`
 
 If the host fails to send a ping after 2 seconds relative to the last sent ping answer, the device should close its connection.
-If the device fails to send a answer for the ping after 2 seconds the host should close its connection.
+If the device fails to send an answer for the ping after 2 seconds the host should close its connection.
 
 Now both the host and the device can send commands and values to each other to update the respective surface.
 
