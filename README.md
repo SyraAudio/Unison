@@ -70,7 +70,7 @@ At this point the device should have its end of the connection ready and the hos
 
 This follows the same routine as the connection establishing from the host side, but with a difference, that the device has to send a connection request message:
 
-`8i 7f 00 00`
+`80 7f 00 00`
 
 If the host recevices this message, it should start the connection routine as described above.
 
